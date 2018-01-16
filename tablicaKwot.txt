@@ -1,0 +1,203 @@
+template<typename Typ>
+tablicaKwot<Typ>::tablicaKwot(string File)
+{
+    fstream plik(File,ios::in);
+    while(!plik.eof())
+    {
+        Typ x;
+        plik>>x;
+        k_.push_back(x);
+    };
+    k_.erase(k_.end()-1);
+    plik.close();
+}
+
+template<>
+tablicaKwot<KwotaPoch>& tablicaKwot<KwotaPoch>::operator++()
+{
+    cout<<"Wprowadz tytul, kwote oraz oprocentowanie w liczbie dziesietnej: ";
+    string tytul; double kwota; double pochodna;
+    cin>>tytul>>kwota>>pochodna;
+    cout<<endl;
+    try
+    {
+        for(int i=0; i<k_.size(); i++)
+        {
+            if(wezKlase(i).wezNazwe()==tytul)
+            {
+                string wyjatek = "Kwota o takiej nazwie juz istnieje!";
+                throw wyjatek;
+            };
+        };
+        KwotaPoch kw(pochodna ,tytul, kwota);
+        k_.push_back(kw);
+    }
+    catch (string wyjatek)
+    {
+        cout<<wyjatek<<endl<<endl;
+    }
+}
+
+template<typename Typ>
+tablicaKwot<Typ>& tablicaKwot<Typ>::operator++()
+{
+    cout<<"Wprowadz dana: ";
+    Typ Dana;
+    cin>>Dana;
+    cout<<endl;
+    k_.push_back(Dana);
+}
+
+
+template<>
+tablicaKwot<KwotaPoch>& tablicaKwot<KwotaPoch>::operator--()
+{
+    try
+    {
+        cout<<"Wprowadz tytul kwoty, ktora ma byc usunieta: ";
+        string dana;
+        cin>>dana;
+        cout<<endl;
+        int j=0;
+        if(k_.size()==0)
+        {
+            string wyjatek = "Ta tablica jest pusta!";
+            throw wyjatek;
+        };
+        for(int i=0; i<k_.size(); i++)
+        {
+            if(k_[i].wezNazwe()==dana)
+            {
+                k_.erase(k_.begin()+i);
+                j++;
+            };
+        };
+        if(j==0)
+        {
+            string wyjatek = "Nie ma takiego elementu!";
+            throw wyjatek;
+        };
+    }
+    catch(string wyjatek)
+    {
+        cout<<wyjatek<<endl<<endl;
+    }
+}
+
+template<typename Typ>
+tablicaKwot<Typ>& tablicaKwot<Typ>::operator--()
+{
+    try
+    {
+        cout<<"Wprowadz dane, ktora ma byc usunieta: ";
+        Typ c;
+        cin>>c;
+        cout<<endl;
+        int j=0;
+        if(k_.size()==0)
+        {
+            string wyjatek = "Ta tablica jest pusta!";
+            throw wyjatek;
+        };
+        for(int i=0; i<k_.size(); i++)
+        {
+            if(k_[i]==c)
+            {
+                k_.erase(k_.begin()+i);
+                j++;
+                i--;
+            };
+        };
+        if(j==0)
+        {
+            string wyjatek = "Nie ma takiego elementu!";
+            throw wyjatek;
+        };
+    }
+    catch(string wyjatek)
+    {
+        cout<<wyjatek<<endl<<endl;
+    }
+}
+
+/*
+template<>
+void tablicaKwot<KwotaPoch>::zapisywanie(string File)
+{
+    ofstream file(File, ios::out);
+    //file.close();
+    //ofstream file2(File, ios::app);
+    for(int i=0; i<k_.size(); i++)
+        {
+            file2<<k_[i].doPliku()<<endl;
+        };
+    file2.close();
+}
+*/
+
+template<typename Typ>
+void tablicaKwot<Typ>::zapisywanie(string File)
+{
+    ofstream file(File, ios::out);
+    file.close();
+    ofstream file2(File, ios::app);
+    for(int i=0; i<k_.size(); i++)
+        {
+            file2<<k_[i]<<endl;
+        };
+    file2.close();
+}
+
+template <typename Typ>
+double tablicaKwot<Typ>::suma()
+{
+    double i=0;
+    for(int x=0; x<k_.size() ;x++)
+    {
+        i=k_[x]+i;
+    };
+    return i;
+}
+
+
+template<typename Typ>
+Typ tablicaKwot<Typ>::wezKlase(int i) const
+{
+    return k_[i];
+}
+
+template<typename Typ>
+ostream& operator<<(ostream& stream, const tablicaKwot<Typ>& t)
+{
+    try
+    {
+        if(t.k_.size()==0)
+        {
+            string wyjatek = "Ta tablica jest pusta!";
+            throw wyjatek;
+        };
+        for(int g=0; g<t.k_.size(); g++)
+        {
+            stream<<(g+1)<<") "<<t.k_[g]<<endl;
+        };
+        return stream;
+    }
+    catch(string s)
+    {
+        stream<<s;
+        return stream;
+    }
+}
+
+template<>
+void tablicaKwot<KwotaPoch>::szukanie(string s)
+{
+    for(int i=0; i<k_.size(); i++)
+    {
+        if(k_[i].wezCzasJakoString()==s)
+        {
+            cout<<k_[i];
+        };
+    };
+}
+
